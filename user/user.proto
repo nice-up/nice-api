@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package nice.user.v1;
+
+option go_package = "user;nice_user_v1";
+
+import "google/protobuf/timestamp.proto";
+
+service UserService { rpc SignUp(SignUpReq) returns (SignUpRep); }
+
+service UserInternalService {
+  rpc GetUser(GetUserReq) returns (GetUserRep);
+  rpc BatchGetUsers(BatchGetUsersReq) returns (BatchGetUsersRep);
+}
+
+message SignUpReq {
+  User user = 1;
+  string captcha = 2;
+}
+
+message SignUpRep { User user = 1; }
+
+message User {
+  int64 uid = 1;
+  string name = 2;
+  string tel = 3;
+  string password = 4;
+  google.protobuf.Timestamp create_time = 5;
+}
+
+message GetUserReq { int64 uid = 1; }
+
+message GetUserRep { User user = 1; }
+
+message BatchGetUsersReq { repeated int64 uids = 1; }
+
+message BatchGetUsersRep { repeated User users = 1; }
+
+message ApplyTokenReq {
+  string identity = 1;
+  string password = 2;
+}
+
+enum UserStatus {
+  OK = 0;
+  DISABLE = 1;
+}

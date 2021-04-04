@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package nice.follow.v1;
+
+option go_package = "follow;nice_follow_v1";
+
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
+service FollowService {
+  rpc Follow(FollowReq) returns (FollowRep);
+  rpc UnFollow(UnFollowReq) returns (UnFollowRep);
+  rpc ListFollowers(ListFollowersReq) returns (ListFollowersRep);
+  rpc ListFollowerings(ListFolloweringsReq) returns (ListFolloweringsRep);
+}
+
+service FollowInternal {
+  // rpc GetFollowers(ListFollowersReq) returns (ListFollowersRep);
+  // rpc GetFollowerings(ListFolloweringsReq) returns
+  // (ListFolloweringsRep);
+}
+
+message Follow {
+  int64 id = 1;
+  int64 uid = 2;
+  google.protobuf.Timestamp create_time = 3;
+}
+
+message Soulmate {
+  int64 uid = 1;
+  string uname = 2;
+  google.protobuf.Timestamp create_time = 3;
+}
+
+message FollowReq { int64 uid = 1 [ (validate.rules).int64.gt = 0 ]; }
+
+message FollowRep {}
+
+message UnFollowReq { int64 uid = 1 [ (validate.rules).int64.gt = 0 ]; }
+
+message UnFollowRep {}
+
+message ListFollowersReq {
+  int64 uid = 1 [ (validate.rules).int64.gt = 0 ];
+  int64 page_token = 2;
+  int32 page_size = 3;
+}
+
+message ListFollowersRep { repeated Follow followers = 1; }
+
+message ListSoulmatesReq {
+  int64 uid = 1;
+  int64 id = 2;
+}
+
+message ListSoulmatesRep {
+  repeated Soulmate soulmates = 1;
+  int64 next_page_token = 2;
+}
+
+message ListFolloweringsReq {
+  int64 uid = 1 [ (validate.rules).int64.gt = 0 ];
+  int64 page_token = 2;
+  int32 page_size = 3;
+}
+
+message ListFolloweringsRep {
+  repeated Follow followings = 1;
+  int64 next_page_token = 2;
+}

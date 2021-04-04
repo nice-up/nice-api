@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package nice.snow.v1;
+
+option go_package = "snow;nice_snow_v1";
+
+service SnowInternalService {
+  // 查询单个
+  rpc GetSnow(GetSnowReq) returns (GetSnowRep);
+  // 批量
+  rpc BatchGetSnows(BatchGetSnowsReq) returns (BatchGetSnowsRep);
+}
+
+message Snow { sfixed64 id = 1; }
+
+message GetSnowReq {}
+
+message GetSnowRep { Snow snow = 1; }
+
+message BatchGetSnowsReq { int32 count = 1; }
+
+message BatchGetSnowsRep { repeated Snow snows = 1; }
