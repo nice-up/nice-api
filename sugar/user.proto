@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+package nice.sugar;
+
+option go_package = "nice/pkg/proto/pb/sugar;nice_sugar_v1";
+
+import "google/protobuf/timestamp.proto";
+
+message User {
+  int64 uid = 1;
+  string name = 2;
+  google.protobuf.Timestamp create_time = 5;
+}

@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package nice.mime.v1;
+
+option go_package = "notification;nice_notification_v1";
+
+import "validate/validate.proto";
+
+service NotificationService {
+  rpc BindDevice(BindDeviceReq) returns (BindDeviceRep);
+  rpc UnbindDevice(UnbindDeviceReq) returns (UnbindDeviceRep);
+}
+
+service NotificationInternalService {
+  rpc SendMessage(SendMessageReq) returns (SendMessageRep);
+  rpc SendMultipleMessages(SendMultipleMessagesReq)
+      returns (SendMultipleMessagesRep);
+  rpc SendMulticastMessage(SendMulticastMessageReq)
+      returns (SendMulticastMessageRep);
+}
+
+message Device { string token = 1; }
+
+message BindDeviceReq {
+  Device device = 1 [ (validate.rules).message.required = true ];
+}
+
+message BindDeviceRep {
+  Device device = 1 [ (validate.rules).message.required = true ];
+}
+
+message UnbindDeviceReq {
+  Device device = 1 [ (validate.rules).message.required = true ];
+}
+
+message UnbindDeviceRep {
+  Device device = 1 [ (validate.rules).message.required = true ];
+}
+
+message SendMessageReq {
+  Message message = 1 [ (validate.rules).message.required = true ];
+}
+
+message SendMessageRep {}
+
+message SendMultipleMessagesReq {
+  repeated Message messages = 1 [ (validate.rules).repeated .min_items = 1 ];
+}
+
+message SendMultipleMessagesRep {}
+
+message Message {
+  int64 uid = 1;
+  map<string, string> data = 2;
+  oneof Notification {
+    Content content = 3;
+    Template template = 4;
+  }
+}
+
+message Template {
+  string id = 1;
+  map<string, string> variable = 2;
+}
+
+message Content {
+  string title = 1;
+  string body = 2;
+}
+
+message SendMulticastMessageReq {
+  repeated int64 uids = 1;
+  MulticastMessage multicast_message = 2
+      [ (validate.rules).message.required = true ];
+}
+
+message SendMulticastMessageRep {}
+
+message MulticastMessage {
+  map<string, string> data = 1;
+  oneof Notification {
+    Content content = 2;
+    Template template = 3;
+  }
+}

@@ -1,0 +1,93 @@
+syntax = "proto3";
+package nice.feed.v1;
+
+option go_package = "feed;nice_feed_v1";
+
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+import "sugar/user.proto";
+
+service FeedService {
+  rpc GetFeed(GetFeedReq) returns (GetFeedRep);
+  rpc CreateFeed(CreateFeedReq) returns (CreateFeedRep);
+  rpc ListFeeds(ListFeedsReq) returns (ListFeedsRep);
+  rpc DeleteFeed(DeleteFeedReq) returns (DeleteFeedRep);
+  rpc CreateComment(CreateCommentReq) returns (CreateCommentRep);
+  rpc DeleteComment(DeleteCommentReq) returns (DeleteCommentRep);
+  rpc ListComments(ListCommentsReq) returns (ListCommentsRep);
+}
+
+/*        feed        */
+message Feed {
+  sfixed64 id = 1;
+  sugar.User user = 2;
+  string content = 3;
+  int32 likes = 4;
+  int32 comments = 5;
+  repeated Emoji emojis = 6;
+  google.protobuf.Timestamp create_time = 7;
+}
+
+message CreateFeedRep { Feed feed = 1; }
+
+message GetFeedRep { Feed feed = 1; }
+
+message ListFeedsReq {
+  sfixed64 page_token = 1;
+  int32 page_size = 2 [ (validate.rules).int32.gt = 0 ];
+}
+
+message ListFeedsRep {
+  repeated Feed feeds = 1;
+  string next_page_token = 2;
+}
+
+message CreateFeedReq {
+  Feed Feed = 1 [ (validate.rules).message.required = true ];
+}
+
+message Emoji {
+  string value = 1;
+  int32 count = 2;
+  bool highlight = 3;
+}
+
+message DeleteFeedReq { int64 feed_id = 1 [ (validate.rules).int64.gt = 0 ]; }
+
+message DeleteFeedRep {}
+
+message DeleteCommentRep {}
+
+message GetFeedReq { int64 feed_id = 1 [ (validate.rules).int64.gt = 0 ]; }
+
+/*        Feed comment        */
+message Comment {
+  sfixed64 id = 1;
+  sugar.User user = 2;
+  sfixed64 feed_id = 3;
+  string content = 4;
+  google.protobuf.Timestamp create_time = 5;
+}
+
+message CreateCommentRep { Comment comment = 1; }
+
+message CreateCommentReq { Comment comment = 1; }
+
+message DeleteCommentReq { sfixed64 comment_id = 1; }
+
+message ListCommentsReq {
+  sfixed64 feed_id = 1;
+  sfixed64 comment_id = 2;
+  int32 page_size = 3;
+  sfixed64 page_token = 4;
+}
+
+message ListCommentsRep {
+  repeated Comment comments = 1;
+  int64 next_page_token = 2;
+}
+
+message Location {
+  double lat = 1 [ (validate.rules).double = {gte : -90, lte : 90} ];
+  double lng = 2 [ (validate.rules).double = {gte : -180, lte : 180} ];
+}
